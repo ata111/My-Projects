@@ -1,7 +1,8 @@
+import copy
 class node:
     def __init__(self, state2):
         self.parent = None
-        self.state = state2
+        self.state = copy.deepcopy(state2)
         self.operation = ' '
     def setParent(self, p):
         self.parent = p
