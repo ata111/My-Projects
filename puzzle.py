@@ -6,6 +6,7 @@ class node:
         self.parent = None
         self.state = copy.deepcopy(state2)
         self.operation = ' '
+        # cost and h variable are used for A* algorithm
         self.cost = 0
         self.h = 0 
     def setParent(self, p):
@@ -20,7 +21,7 @@ class node:
         #print_board(self.parent.state)
         print ('heruistic : ' +  '\t' + str(self.h))
         print('---------------------')
-
+    # this method is used to compare the costs for the heap sorting thing...
     def __lt__(self,other):
         return self.h > other.h
 
@@ -105,7 +106,7 @@ def find1(num):
             if(num == goal[i][j]):
                 return i,j
     
-
+# heuristic function  ( 3 functions and their results will be added together to get a very high accuracy 
 def h_one(state):
     result = 0
     for row in range(3):
@@ -114,7 +115,7 @@ def h_one(state):
                 if(state[row][column] != ' '):
                     result += 1
     return result
-    
+    # heuristic function 
 def h_two(state):
     result = 0
     if(state == goal):
@@ -125,7 +126,7 @@ def h_two(state):
                 x2,y2 = find1(state[i][j])
                 result += abs(i-x2) + abs(j-y2)
     return result
-             
+    # heuristic function          
 def h_three(state):
     result = 0
     for row in range(3):
@@ -141,15 +142,16 @@ def h_three(state):
 def print_board(board):
     for row in board:
          print(row)
-
+# returns the row , col of the blank - > ' ' remeber this game is all about moving the blank up,down,left,right
 def find_blank(state):
     for i in range(3):
         for j in range(3):
             if(state[i][j] == ' '):
                 return i,j
-
+#state here is a list of lists 2D array
 def move_up(state=[]):
         son = node(state)
+        # the parent is the bigdaddy = node_to_be_expanded which is the son before setting an operation on it
         son.setParent(bigdaddy)
         son.setOp('u')
         row,colum = find_blank(state)
