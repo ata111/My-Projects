@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 
 
-
+# jobs.ps has changed it's website design so this code may not be valid now
 
 data = requests.get("http://www.jobs.ps/index.php")
 bytes = data.content
