@@ -71,7 +71,8 @@ def expand():
         while found_goal == False:
             
             #node_to_be_expanded = min(open_list,key=attrgetter('h'))
-             # as you see i sorted it beofre in heappush method , so when i get the first element [1]  it will be the smallest one
+             # as you see i sorted it before in heappush method , so when i get the first element [1]  it will be the smallest one
+             # the algorithm orders you to expand the node with minimal cost
             node_to_be_expanded = heappop(open_list)[1]
             
             # dict key,value are the same i need this for checking if a certial node is expaned before , i dont want to expand
