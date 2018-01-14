@@ -5,11 +5,13 @@ class node:
     def __init__(self, state2 = []):
         self.parent = None
         self.state = copy.deepcopy(state2)
+        # operation variable is used to store the op such as : left, right ,up , down( in other words moved the blank to the left or ...)
         self.operation = ' '
         # cost and h variable are used for A* algorithm
         self.cost = 0
         self.h = 0 
     def setParent(self, p):
+        #storing the parent so i can recursivly go back and print the boards and the operations that lead me to the gial
         self.parent = p
     def setOp(self, op):
         self.operation = op
@@ -36,10 +38,13 @@ def show_goal(son_node):
         global found_goal
         found_goal = True
         mystack = []
+        #storing the nodes in a stack , then get it's parent and store it in the stack ... again ... again ..
+        # i did this to reverse the view  Last in fast out ... :D LIFO
         while(son_node.parent != None):
             mystack.append(son_node)
             son_node = son_node.parent
         print('************************************')
+        #know popo them out and print the board , operation , and the total cost ( A *)
         while(mystack):
             
             newa = mystack.pop()
@@ -56,6 +61,7 @@ def expand():
     inital = node(board)
     
     #open_list.append(inital)
+    #pushing it to the heap which is the open_list, inital.h is on what to sort it for 
     heappush(open_list ,(inital.h, inital ))
 
     
@@ -65,17 +71,28 @@ def expand():
         while found_goal == False:
             
             #node_to_be_expanded = min(open_list,key=attrgetter('h'))
-             
+             # as you see i sorted it beofre in heappush method , so when i get the first element [1]  it will be the smallest one
             node_to_be_expanded = heappop(open_list)[1]
             
-            
+            # dict key,value are the same i need this for checking if a certial node is expaned before , i dont want to expand
+            # a node that has already been expanded , because if you move it to down , and then to up you will obtain the same
+            # node so no need to sort those ..
             closed_list[node_to_be_expanded] = node_to_be_expanded
             
+            # open list have the nodes that have not been sorted , move up,down,right,left methods insert nodes to open_list after
+            # they change the operation and the board 
             if node_to_be_expanded in open_list:
+                # ok now remove the node so i will not sort it again , but becareful here i might get the node again
+                #when for example the move_up method obtain a certain node and does move up operation on it and suddenly it's
+                # similar to previous node or node that has been already expanded
+                # in the open list so every node is expanded is added to the block_list ( Closed_list) Dict
                 open_list.remove(node_to_be_expanded)
+                
                 
             bigdaddy = node_to_be_expanded
             if( node_to_be_expanded.operation == ' '):
+                # it's passing the 2D array ( lists inside  a list)
+                # state is the board(2D array)
                 move_up(node_to_be_expanded.state)
                 move_down(node_to_be_expanded.state)
                 move_right(node_to_be_expanded.state)
@@ -99,7 +116,7 @@ def expand():
 
 
 
-    
+ #this function will be used by a      heuristic function ->  h_two
 def find1(num):
     for i in range(3):
         for j in range(3):
@@ -159,11 +176,14 @@ def move_up(state=[]):
             #print("sorry , can't go up")
             pass
         else:
+            # moving up row-1 if my row is 2 it will be 1 
             temp = son.state[row-1][colum]
             son.state[row-1][colum]= ' '
             son.state[row][colum] = temp
             son.cost = son.parent.cost + 1
-            son.h = son.cost +  h_one(son.state) + h_two(son.state) + h_three(son.state) * 20
+            #computing the A* variable according to the algorithm , googel it it's AN AI algorithm
+            # here i used 3 functions you can use one , but i want it to be very very fast :D
+            son.h = son.cost +  h_one(son.state) + h_two(son.state) +  (h_three(son.state) * 20)
             
             
             if (son.state == goal):
@@ -176,7 +196,7 @@ def move_up(state=[]):
                 #open_list.append(son)
 
             son.info()
-    
+    # no need to do a documentation here it's the same as above
 def move_down(state):
     
     son = node(state)
@@ -252,19 +272,26 @@ def move_left(state):
             son.info()
         
 # for storing nodes    
+# the heap for storing the nodes that are ready for getting expanded , the move methods fill it
 open_list = []
+# a dict with the node being the Key and Value at the same time so i dont expand a node that similar node like it got expanded before
 closed_list  = {}
+# the move methods will set this boolean to true if they find it
 found_goal = False
+# big daddy is the node itself , before being passed to the move methods , or the node before doing a certain
+#operation such as up ,down ,left ,right
 bigdaddy = None
+# the goal node the move methods will make it points to the goal node
 wanted_node = None
 
+#i want the A* algorithm to reach this and it will give me the steps ( by storing the string of the operations)
 goal = [
 [1,2,3]
 ,[8,4,' ']
 ,[7,6,5]
       ]
 
-
+# the inital board that the computer will start from
 board = [
 [5, 6, 7]
 ,[4, 8,' ']
