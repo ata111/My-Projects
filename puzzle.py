@@ -98,10 +98,15 @@ def expand():
                 move_right(node_to_be_expanded.state)
                 move_left(node_to_be_expanded.state)
             elif( node_to_be_expanded.operation == 'u'):
+                # i added all the move methods excluding the opposite to 'u' Up which is the down
+                # because if it's operation was up or 'u' and i made an 'd' operation i will get the node before doing an up operation
+                # and that will slow the process since i will have to expand it again to get the up and it will go back to it's
+                # previous state
                 move_up(node_to_be_expanded.state)
                 move_right(node_to_be_expanded.state)
                 move_left(node_to_be_expanded.state)
             elif( node_to_be_expanded.operation == 'd'):
+                #same applies here ..
                 move_down(node_to_be_expanded.state)
                 move_right(node_to_be_expanded.state)
                 move_left(node_to_be_expanded.state)
