@@ -1,0 +1,21 @@
+from bs4 import BeautifulSoup
+import requests
+
+
+
+for i in range(10):
+    page_link = "https://www.shobiddak.com/stuffs?page=%s" %str(i+1)
+    data = requests.get(page_link)
+    bytes = data.content
+    soup2 = BeautifulSoup(bytes,"html.parser")
+    titles = soup2.find_all("p",{'class':"section_title"})
+    cities = soup2.find_all("p", {'class': "third-info"})
+    for title,city in zip(titles,cities):
+        city_text = city.find("a").text
+        title_link = title.find("a")['href']
+        title_text = title.find("a").text.lower()
+
+        if ("لابتوب" in title_text or "laptop" in title_text or "dell" in title_text or "hp" in title_text or "acer" in title_text) and "نابلس" in city_text :
+            print(city_text)
+            print(title_text)
+            print('https://www.shobiddak.com/'+title_link)
