@@ -8,9 +8,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Random;
+import java.util.PriorityQueue;
 import java.util.Stack;
-import java.util.TreeSet;
 class StateCompartor implements Comparator<State>,Serializable
 {
     // i do this so later i will be able to choose the minimum state
@@ -52,6 +51,7 @@ class StateCompartor implements Comparator<State>,Serializable
         public int h = 0;
         public int f = 0;
         public String operation = "nothing";
+        public String robotNameMoved = "unknown";
         public void calculate()
         {
             f = h +g_cost;
@@ -110,7 +110,7 @@ public class AIReema {
     //
     volatile boolean foundGoal = false;
     //  this needs to be sorted so every time i get the  state with the minimum h
-    TreeSet<State> openList = new TreeSet<State>(new StateCompartor());
+    PriorityQueue<State> openList = new  PriorityQueue<State>(new StateCompartor());
     // this does not need to be sorted
     HashSet<State> closedList = new HashSet<State>();
     LinkedList<Rect> obstacles = new LinkedList<Rect>();
@@ -219,9 +219,9 @@ public class AIReema {
         // the heruistic is all about computing the distance between a and b and between b and c
         double v1 = distance(s1.A.x, s1.A.y, s1.B.x, s1.B.y);
         double v2 = distance(s1.B.x, s1.B.y, s1.C.x, s1.C.y);
-        double result = Math.sqrt(v1+v2);
+  
         
-        return (int)(result);
+        return (int)4;
     }
     void moveRight(State s1,String robotName){
         //using copy constructor to perform a deep copy , i dont want a shallow copy 
@@ -234,15 +234,18 @@ public class AIReema {
         
         if(robotName.equals("A")){
             s1.A.x++;
-            s2.operation = "Robot A moves right";
+            s2.operation = "moves right";
+            s2.robotNameMoved = "A";
         }
         else if(robotName.equals("B")){
             s1.B.x++;
-            s2.operation = "Robot B moves right";
+            s2.operation = "moves right";
+            s2.robotNameMoved = "B";
         }
         else if(robotName.equals("C")){
             s1.C.x++;
-            s2.operation = "Robot C moves right";
+            s2.operation = "moves right";
+            s2.robotNameMoved = "C";
         }
         else
         {
@@ -262,7 +265,7 @@ public class AIReema {
         else{
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
-            openList.add(s2);
+                openList.add(s2);
             
         } // end of if
         } // end of else
@@ -271,6 +274,7 @@ public class AIReema {
     void moveLeft(State s1,String robotName){
         //using copy constructor to perform a deep copy , i dont want a shallow copy 
         State s2 = new State(s1);
+        
         s2.parent = s1;
         s2.g_cost +=1;
         
@@ -279,15 +283,18 @@ public class AIReema {
         
         if(robotName.equals("A")){
             s1.A.x--;
-            s2.operation = "Robot A moves left";
+            s2.operation = "moves left";
+            s2.robotNameMoved = "A";
         }
         else if(robotName.equals("B")){
             s1.B.x--;
-            s2.operation = "Robot B moves left";
+            s2.operation = "moves left";
+            s2.robotNameMoved = "B";
         }
         else if(robotName.equals("C")){
             s1.C.x--;
-            s2.operation = "Robot C moves left";
+            s2.operation = "moves left";
+            s2.robotNameMoved = "C";
         }
         else
         {
@@ -307,7 +314,7 @@ public class AIReema {
         else{
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
-            openList.add(s2);
+                openList.add(s2);
             
         } // end of if
         } // end of else
@@ -324,15 +331,18 @@ public class AIReema {
         
         if(robotName.equals("A")){
             s1.A.y++;
-            s2.operation = "Robot A moves down";
+            s2.operation = "moves down";
+            s2.robotNameMoved = "A";
         }
         else if(robotName.equals("B")){
             s1.B.y++;
-            s2.operation = "Robot B moves down";
+            s2.operation = "moves down";
+            s2.robotNameMoved = "B";
         }
         else if(robotName.equals("C")){
             s1.C.y++;
-            s2.operation = "Robot C moves down";
+            s2.operation = "moves down";
+            s2.robotNameMoved = "C";
         }
         else
         {
@@ -352,7 +362,7 @@ public class AIReema {
         else{
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
-            openList.add(s2);
+                openList.add(s2);
             
         } // end of if
         } // end of else
@@ -368,16 +378,20 @@ public class AIReema {
         // herusitic , distance , add to open list 
         
         if(robotName.equals("A")){
+            
             s1.A.y--;
-            s2.operation = "Robot A moves up";
+            s2.operation = "moves up";
+            s2.robotNameMoved = "A";
         }
         else if(robotName.equals("B")){
             s1.B.y--;
-            s2.operation = "Robot B moves up";
+            s2.operation = "moves up";
+            s2.robotNameMoved = "B";
         }
         else if(robotName.equals("C")){
             s1.C.y--;
-            s2.operation = "Robot C moves up";
+            s2.operation = "moves up";
+            s2.robotNameMoved = "C";
         }
         else
         {
@@ -397,7 +411,8 @@ public class AIReema {
         else{
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
-            openList.add(s2);
+            if(!openList.contains(s2))
+                openList.add(s2);
             
         } // end of if
         } // end of else
@@ -407,29 +422,68 @@ public class AIReema {
     {
         
     }
-    
+    public int whoToMove(State s1)
+    {
+        
+        double AB = distance(s1.A.x, s1.A.y, s1.B.x, s1.B.y);
+        double BC = distance(s1.B.x, s1.B.y, s1.C.x, s1.C.y);
+        double AC = distance(s1.A.x, s1.A.y, s1.C.x, s1.C.y);
+        double A = AB + AC;
+        double B = AB + BC;
+        double C = AC + BC;
+        double max1 = Math.max(A, B);
+        double max2 = Math.max(max1, C);
+        if(max2 == A)
+            return 0;
+        else if(max2 == B)
+            return 1;
+        else return 2;
+        
+        
+        
+    }
     public  void run()
     {
         //addObstacles();
         State inital = new State();
         inital.setCoordinates(100, 100, 120, 100, 130, 100);
         String [] names = {"A","B","C"};
-        Random r = new Random();
+        int robotNumber = 0; // can be from 0 to 2  0: A , 1:B, 2:C
         openList.add(inital);
         int i =1;
+        State s = null;
+        
         while(!foundGoal)
         {
             
-           State s = openList.pollFirst();
-           System.out.println("Iterations " + i++  + " h : " + s.h + " x1 : " + s.A.x + " y1 :" + s.A.y  + " x2 : " + s.B.x + " y2 : " + s.B.y + " x3 : " + s.C.x + " y3 : " + s.C.y  );
+            s = openList.poll();
+           System.out.println("Iterations " + i++  + " h : " + s.h + " x1 : " + s.A.x + " y1 :" + s.A.y  + " x2 : " + s.B.x + " y2 : " + s.B.y + " x3 : " + s.C.x + " y3 : " + s.C.y + " # : " +closedList.size()  );
            closedList.add(s);
-           moveDown(s,names[r.nextInt(names.length)]);
-           moveUp(s,names[r.nextInt(names.length)]);
-           moveRight(s,names[r.nextInt(names.length)]);
-           moveLeft(s,names[r.nextInt(names.length)]); 
+           if(s.operation.equals("moves right")){
+           moveDown(s,names[whoToMove(s)]);
+           moveUp(s,names[whoToMove(s)]);
+           moveRight(s,names[whoToMove(s)]);
+               
+           }
+           else if(s.operation.equals("moves left")){
+           moveDown(s,names[whoToMove(s)]);
+           moveUp(s,names[whoToMove(s)]);
+           moveLeft(s,names[whoToMove(s)]);
+               
+           }
+           else if(s.operation.equals("moves up")){
+           moveRight(s,names[whoToMove(s)]);
+           moveUp(s,names[whoToMove(s)]);
+           moveLeft(s,names[whoToMove(s)]);
+               
+           }
+           else{
+           moveUp(s,names[whoToMove(s)]);
+           moveRight(s,names[whoToMove(s)]);
+           moveLeft(s,names[whoToMove(s)]); 
            
         }
-        
+        }
         
     }
     
