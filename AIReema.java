@@ -139,15 +139,15 @@ public class AIReema {
         double distanceAC = distance(s1.A.x, s1.A.y, s1.C.x, s1.C.y);
         double distanceBC = distance(s1.B.x, s1.B.y, s1.C.x, s1.C.y);
         
-        if(distanceAB <= 1  && distanceAC <= 1 ){
+        if(distanceAB <= 2  && distanceAC <= 2 ){
             foundGoal = true;
             return true;
         }
-        else if(distanceAB <= 1  && distanceBC <= 1 ){
+        else if(distanceAB <= 2  && distanceBC <= 2 ){
             foundGoal = true;
             return true;
         }
-        else if(distanceAC <= 1  && distanceBC <= 1 ){
+        else if(distanceAC <= 2  && distanceBC <= 2 ){
             foundGoal = true;
             return true;
         }
