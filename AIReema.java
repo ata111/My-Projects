@@ -74,13 +74,14 @@ class StateCompartor implements Comparator<State>,Serializable
 //        {
 //            return     (int)(A.x + A.y+ B.x+  B.y +C.x+ C.y);
 //        }
-        // copy constructor
+        // default constructor
         public State()
         {
             A = new Point();
             B = new Point();
             C = new Point();
         }
+	    // copy constructor
         public State (State state) {
             this.A = state.A;
 	    this.B = state.B;
