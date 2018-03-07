@@ -74,24 +74,25 @@ class StateCompartor implements Comparator<State>,Serializable
 //        {
 //            return     (int)(A.x + A.y+ B.x+  B.y +C.x+ C.y);
 //        }
-        // default constructor
+        // copy constructor
         public State()
         {
             A = new Point();
             B = new Point();
             C = new Point();
         }
-	    // copy constructor
         public State (State state) {
-            this.A = state.A;
-	    this.B = state.B;
-            this.C = state.C;
+            this.A = new Point(state.A);
+	    this.B = new Point(state.B);
+            this.C = new Point(state.C);
             this.parent = state.parent;
             this.g_cost = state.g_cost;
             this.h = state.h;
             this.f = state.f;
             this.operation = state.operation;
 	}
+        
+        
         @Override
         public boolean equals(Object o) {
             State s = (State)o;
@@ -145,9 +146,11 @@ public class AIReema {
                 s2 = s2.parent;
             }
             // print them
+            State sol = null;
             while(!finalList.isEmpty())
             {
-                System.out.println(finalList.pop().operation);
+                sol = finalList.pop();
+                System.out.println(sol.robotNameMoved + " "  + sol.operation);
             }
     }
     public boolean isGoal(State s1)
@@ -238,7 +241,7 @@ public class AIReema {
         double v2 = distance(s1.B.x, s1.B.y, s1.C.x, s1.C.y);
   
         
-        return (int)(v1+v2);
+        return (int)(Math.sqrt(Math.pow(v1, 2)+Math.pow(v2, 2)));
     }
     void moveRight(State s1,String robotName){
         //using copy constructor to perform a deep copy , i dont want a shallow copy 
@@ -283,10 +286,10 @@ public class AIReema {
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
             
-              //  if(!openList.contains(s2)){
-                openList.add(s2);
+              if(!openList.contains(s2))
+                 openList.add(s2);
                 
-              //  }
+            
             
         } // end of if
         } // end of else
@@ -341,7 +344,7 @@ public class AIReema {
         else{
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
-                //if(!openList.contains(s2))
+                if(!openList.contains(s2))
                 openList.add(s2);
             
         } // end of if
@@ -390,7 +393,7 @@ public class AIReema {
         else{
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
-               // if(!openList.contains(s2))
+               if(!openList.contains(s2))
                 openList.add(s2);
             
         } // end of if
@@ -446,8 +449,7 @@ public class AIReema {
         else{
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
-            System.out.println(" MoveUp ");
-          // if(!openList.contains(s2))
+          if(!openList.contains(s2))
                 openList.add(s2);
             
         } // end of if
