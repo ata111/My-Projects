@@ -4,13 +4,17 @@
  * and open the template in the editor.
  */
 package multimedia;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 class StateCompartor implements Comparator<State>,Serializable
 {
     // i do this so later i will be able to choose the minimum state
@@ -37,7 +41,8 @@ class StateCompartor implements Comparator<State>,Serializable
         // copy constructor
         public Point(Point point) {
             this.x = point.x;
-		this.y = point.y;
+            this.y = point.y;
+            // 
 	}  
         public Point()
         {
@@ -108,11 +113,18 @@ class StateCompartor implements Comparator<State>,Serializable
                    
 class Rect
 {
-    public int x;
-    public int y;
-    public int width;
-    public int height;
+    public double x;
+    public double y;
+    public double width;
+    public double height;
     public Rect()
+    {
+        x = 0;
+        y = 0;
+        width = 0;
+        height = 0;
+    }
+    public Rect(double xx,double yy,double ww,double hh)
     {
         x = 0;
         y = 0;
@@ -123,6 +135,7 @@ class Rect
 }
 public class AIReema {
     //
+    
     volatile boolean foundGoal = false;
     //  this needs to be sorted so every time i get the  state with the minimum h
     PriorityQueue<State> openList = new  PriorityQueue<State>(new StateCompartor());
@@ -134,6 +147,7 @@ public class AIReema {
     // final stack , when i find the goal i will store it and store every expanded state in the closedList in LIFO manner
     // so i will start printing the  output  from the initial  state to the goal state
     Stack<State> finalList = new Stack<State>();
+    public Stack<State> graphicList = new Stack<State>();
     public void showSolution(State s2)
     {
         
@@ -147,6 +161,8 @@ public class AIReema {
             }
             // print them
             State sol = null;
+            graphicList = (Stack<State>)finalList.clone();
+            
             while(!finalList.isEmpty())
             {
                 sol = finalList.pop();
@@ -175,12 +191,17 @@ public class AIReema {
     }
     public boolean checkMyStep(State s1,String robotName)
     {
+         
        boolean result = true;
+       
         if(robotName.equals("A")){
             for(Rect R:obstacles){
-            if ( ( s1.A.x < R.x || R.x+R.width < s1.A.x) && ( s1.A.y < R.y || R.y+R.height < s1.A.x)       )
-                continue;
+            if ( ( s1.A.x <= R.x || R.x+R.width <= s1.A.x) && ( s1.A.y <= R.y || R.y+R.height <= s1.A.y)       )
+            {
+            }
             else {
+                               System.err.println(("it's fAAAAALSE ******************"));
+
                 result = false;
                 break;
             }
@@ -194,9 +215,12 @@ public class AIReema {
         else if(robotName.equals("B"))
         {
         for(Rect R:obstacles){
-            if ( ( s1.B.x < R.x || R.x+R.width < s1.B.x) && ( s1.B.y < R.y || R.y+R.height < s1.B.x)       )
-                continue;
+            if ( ( s1.B.x < R.x || R.x+R.width < s1.B.x) && ( s1.B.y < R.y || R.y+R.height < s1.B.y)       )
+            {
+                
+            }
             else {
+                System.err.println(("it's fAAAAALSE ******************"));
                 result = false;
                 break;
             }
@@ -209,9 +233,12 @@ public class AIReema {
         else if(robotName.equals("C"))
         {
             for(Rect R:obstacles){
-            if ( ( s1.C.x < R.x || R.x+R.width < s1.C.x) && ( s1.A.y < R.y || R.y+R.height < s1.C.x)       )
-                continue;
+            if ( ( s1.C.x < R.x || R.x+R.width < s1.C.x) && ( s1.A.y < R.y || R.y+R.height < s1.C.y)       )
+            {
+                
+            }
             else {
+                System.err.println(("it's fAAAAALSE ******************"));
                 result = false;
                 break;
             }
@@ -456,10 +483,6 @@ public class AIReema {
         } // end of else
         
     }
-    public void addObstacles()
-    {
-        
-    }
     public int WhichRobotToMove(State s1)
     {
         
@@ -480,11 +503,46 @@ public class AIReema {
         
         
     }
+    public int[] readFile()
+    {
+        File file = new File("C:\\robots\\robots.txt");
+        int []coordinates_of_three_robots = coordinates_of_three_robots = new int[6];
+        try {
+            Scanner scanner = new Scanner(file);
+            String [] robotCoordinates = scanner.nextLine().split(" ");
+            
+            int j =0;
+            for(String s:robotCoordinates){
+                coordinates_of_three_robots[j] = Integer.parseInt(s);
+                j++;
+                     }
+            
+                
+            int numberOfObstacles = Integer.parseInt(scanner.nextLine());
+            for(int i=0;i<numberOfObstacles;i++)
+            {
+                String [] obstacleCoordinates = scanner.nextLine().split(" ");
+                int x = Integer.parseInt(obstacleCoordinates[0]);
+                int y = Integer.parseInt(obstacleCoordinates[1]);
+                int w = Integer.parseInt(obstacleCoordinates[2]);
+                int h = Integer.parseInt(obstacleCoordinates[3]);
+                System.err.println(x +  " " + y );
+                obstacles.add(new Rect(x,y,w,h));
+            }
+            
+            
+        } catch (Exception ex) {
+            System.out.println("Error in readFile");
+            //Logger.getLogger(AIReema.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return coordinates_of_three_robots;
+    }
     public  void run()
     {
         //addObstacles();
         State inital = new State();
-        inital.setCoordinates(100, 100, 120, 100, 130, 100);
+        int [] coordinates = readFile();
+        inital.setCoordinates(coordinates[0], coordinates[1], coordinates[2], coordinates[3], coordinates[4], coordinates[5]);
         String [] names = {"A","B","C"};
          // can be from 0 to 2  0: A , 1:B, 2:C
         openList.add(inital);
@@ -495,7 +553,7 @@ public class AIReema {
         {
             s = openList.peek();
             robotNumber = WhichRobotToMove(s);
-            System.out.println("Iterations " + i++  + " h : " + s.h + " x1 : " + s.A.x + " y1 :" + s.A.y  + " x2 : " + s.B.x + " y2 : " + s.B.y + " x3 : " + s.C.x + " y3 : " + s.C.y + " # : " +closedList.size() + " open: " + openList.size()  );
+           // System.out.println("Iterations " + i++  + " h : " + s.h + " x1 : " + s.A.x + " y1 :" + s.A.y  + " x2 : " + s.B.x + " y2 : " + s.B.y + " x3 : " + s.C.x + " y3 : " + s.C.y + " # closed : " +closedList.size() + " open: " + openList.size()  );
             if(s.operation.equals("moves right")){
                 moveDown(s,names[robotNumber]);
                 moveUp(s,names[robotNumber]);
