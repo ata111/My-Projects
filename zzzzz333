@@ -56,8 +56,8 @@ class StateCompartor implements Comparator<State>,Serializable
         public int g_cost = 0;
         public int h = 0;
         public int f = 0;
-        public String operation = "nothing";
-        public String robotNameMoved = "unknown";
+        public String operation = "";
+        public String robotNameMoved = "";
         public void calculate()
         {
             f = h +g_cost;
@@ -190,63 +190,38 @@ public class AIReema {
         else return false; 
     }
     public boolean checkMyStep(State s1,String robotName)
-    {
-         
+    { 
        boolean result = true;
-       
         if(robotName.equals("A")){
             for(Rect R:obstacles){
-            if ( ( s1.A.x <= R.x || R.x+R.width <= s1.A.x) && ( s1.A.y <= R.y || R.y+R.height <= s1.A.y)       )
+            if ( (R.x <= s1.A.x && s1.A.x  <=  R.x+R.width  ) && (R.y <=s1.A.y && s1.A.y  <=R.y+R.height )    )
             {
+                 result = false;
+                 break;   
             }
-            else {
-                               System.err.println(("it's fAAAAALSE ******************"));
-
-                result = false;
-                break;
-            }
-             
-                
                 } // end of loop
             
         } // end if
-        
-        
         else if(robotName.equals("B"))
         {
         for(Rect R:obstacles){
-            if ( ( s1.B.x < R.x || R.x+R.width < s1.B.x) && ( s1.B.y < R.y || R.y+R.height < s1.B.y)       )
+            if ( (R.x <= s1.B.x && s1.B.x  <=  R.x+R.width  ) && (R.y <=s1.B.y && s1.B.y  <=R.y+R.height )    )
             {
-                
+                 result = false;
+                 break;   
             }
-            else {
-                System.err.println(("it's fAAAAALSE ******************"));
-                result = false;
-                break;
-            }
-             
-                
                 } // end of loop
         
         } // end if
-  
         else if(robotName.equals("C"))
         {
             for(Rect R:obstacles){
-            if ( ( s1.C.x < R.x || R.x+R.width < s1.C.x) && ( s1.A.y < R.y || R.y+R.height < s1.C.y)       )
+            if ( (R.x <= s1.C.x && s1.C.x  <=  R.x+R.width  ) && (R.y <=s1.C.y && s1.C.y  <=R.y+R.height )    )
             {
-                
+                 result = false;
+                 break;   
             }
-            else {
-                System.err.println(("it's fAAAAALSE ******************"));
-                result = false;
-                break;
-            }
-             
-                
                 } // end of loop
-            
-            
         } // end if
         else
         {
