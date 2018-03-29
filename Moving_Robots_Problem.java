@@ -30,7 +30,7 @@ class StateCompartor implements Comparator<State>,Serializable
             return 1;
     } 
 }
-//point class
+//point class ..
  class Point
     {
         public double x =0;
