@@ -115,7 +115,7 @@ public class ChatServer extends Application {
         }
  
     }
-    // sends the strings from the clients
+    // sends the strings from to clients
     class SendChat
     {
         Socket client;
