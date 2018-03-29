@@ -26,7 +26,7 @@ class HandleRequest(threading.Thread):
         content_length = 232
         content_type = "text/html"
 
-        #response message
+        #response message,
         response_message = {"Status line":version +" "+status_code + " " + status_phrase,
                             "Connection":connection,
                             "Date":date,
