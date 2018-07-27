@@ -134,7 +134,7 @@ class Rect
     }
  
 }
-public class AIReema {
+public class Algo {
     //
     
     volatile boolean foundGoal = false;
@@ -562,7 +562,7 @@ public class AIReema {
     
  public static void main(String []s)
  {
-     AIReema yes = new AIReema();
+     Algo yes = new Algo();
      yes.run();
      
  }
