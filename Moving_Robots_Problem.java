@@ -15,9 +15,20 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+// ************************************
+// Im using A* algorithm to solve this problem
+// ************************************
 class StateCompartor implements Comparator<State>,Serializable
 {
     // i do this so later i will be able to choose the minimum state
+    /*
+    compare the states based on the f which is g(from the algorithm ,indicates how deep you are in the A * tree
+    and i will increment it each time i create a new child state from the parent one , by the way we can create up to 3 child from the same 
+    parent eg : one state going left , one right and one down , but it's not good to create a 4th one because it
+    will reverse the parent state it self eg : top -> bottom )
+       + h ( heuristic )
+    
+    */
     public int compare(State s1, State s2) {
         // f = g + h
         int f1 = s1.f; 
@@ -80,13 +91,14 @@ class StateCompartor implements Comparator<State>,Serializable
 //        {
 //            return     (int)(A.x + A.y+ B.x+  B.y +C.x+ C.y);
 //        }
-        // copy constructor
+        
         public State()
         {
             A = new Point();
             B = new Point();
             C = new Point();
         }
+	    // copy constructor
         public State (State state) {
             this.A = new Point(state.A);
 	    this.B = new Point(state.B);
@@ -98,7 +110,7 @@ class StateCompartor implements Comparator<State>,Serializable
             this.operation = state.operation;
 	}
         
-        
+        // a state is equal to another state if the robots (A,B,C ) have the same x and y coordinates
         @Override
         public boolean equals(Object o) {
             State s = (State)o;
@@ -111,7 +123,7 @@ class StateCompartor implements Comparator<State>,Serializable
         }
     
 
-                   
+     /*  this Rect class represent obstacles objects ( things that you can move on ) */              
 class Rect
 {
     public double x;
@@ -136,13 +148,15 @@ class Rect
 }
 public class Algo {
     //
-    
+    // i was going to spawn multi thread , but this problem is sequential i dont think that it will work , 
     volatile boolean foundGoal = false;
-    //  this needs to be sorted so every time i get the  state with the minimum h
+	
+    //  this needs to be sorted, so every time i will get the state with the minimum h(from A* algorithm we select the state with minimum h)
+	// which is g+ f
     PriorityQueue<State> openList = new  PriorityQueue<State>(new StateCompartor());
     
     
-    // this does not need to be sorted
+    // this does not need to be sorted , no duplicate states , how ? equal method will determine which states are equal
     HashSet<State> closedList = new HashSet<State>();
     LinkedList<Rect> obstacles = new LinkedList<Rect>();
     // final stack , when i find the goal i will store it and store every expanded state in the closedList in LIFO manner
@@ -160,7 +174,7 @@ public class Algo {
                 finalList.add(s2);
                 s2 = s2.parent;
             }
-            // print them
+            // print them from buttom to top
             State sol = null;
             graphicList = (Stack<State>)finalList.clone();
             
@@ -170,6 +184,10 @@ public class Algo {
                 System.out.println(sol.robotNameMoved + " "  + sol.operation);
             }
     }
+	/* The robots are just circles right? and each circle have a radius of 1 so if i want 
+	two robots to touch each other well that is radius + radius , try to draw it 1 meter from the center of the first(circle)
+	and another meter from the center of the second circle (robot)
+	*/
     public boolean isGoal(State s1)
     {
         double distanceAB = distance(s1.A.x, s1.A.y, s1.B.x, s1.B.y);
@@ -190,6 +208,7 @@ public class Algo {
         }
         else return false; 
     }
+	// checks the x and y coordinates so that they're not in the obstacles coordinates
     public boolean checkMyStep(State s1,String robotName)
     { 
        boolean result = true;
@@ -231,6 +250,7 @@ public class Algo {
         
         return result;
     }
+	// a small function that will be used to calculate a heuristic value , check AI algorithm to know what a heuristic function is 
     public double distance(double x1,double y1,double x2,double y2)
     {
        double result =  Math.sqrt( Math.pow(Math.abs(x2 - x1), 2)    + Math.pow(Math.abs(y2- y1),2)  ) ;
@@ -246,6 +266,16 @@ public class Algo {
         
         return (int)(Math.sqrt(Math.pow(v1, 2)+Math.pow(v2, 2)));
     }
+	/*
+	
+	1-first make a copy of the parent state and increase the 'g' because we're one level deeper now
+	2- set it's parent  
+	3- increment the x to the right 
+	4- check if we found the solution 
+	5- if not check if this state is not a duplicate one , because we don't want to reperform the same calculation on the newer states
+	6- also check the coordinates of this state so it's not in the obstacles , if the 5 and 6 are statisfied add it to the openList
+	a list that we will take the states from to make a new calculation until we  find the goal 
+	*/
     void moveRight(State s1,String robotName){
         //using copy constructor to perform a deep copy , i dont want a shallow copy 
         State s2 = new State(s1);
@@ -277,8 +307,7 @@ public class Algo {
         s2.h = heruistic(s2);
         s2.calculate();
         
-        // add to open list , first check if it does exists in the closed list
-        // check for rects   .
+        
         if(isGoal(s2))
         {
             System.out.println(" Found the Goal ");
@@ -286,6 +315,8 @@ public class Algo {
             
         }
         else{
+		// add to open list , first check if it does exists in the closed list
+        // check for rects   .
         if(!closedList.contains(s2) && checkMyStep(s2,robotName)    )
         {
             
@@ -459,6 +490,10 @@ public class Algo {
         } // end of else
         
     }
+	/*
+	We want to move the robot that is the closest to both of the other robots 
+	this will help the heuristic function to speed up the algorithm
+	*/
     public int WhichRobotToMove(State s1)
     {
         
@@ -479,6 +514,10 @@ public class Algo {
         
         
     }
+	/*
+	reads the initial state coordinates from a file , remember in the first we start with one state only , you can hardcode the 
+	coordinates it's ok 
+	*/
     public int[] readFile()
     {
         File file = new File("C:\\robots\\robots.txt");
@@ -513,6 +552,7 @@ public class Algo {
         }
         return coordinates_of_three_robots;
     }
+	// this method start it all !!
     public  void run()
     {
         //addObstacles();
@@ -530,11 +570,14 @@ public class Algo {
             s = openList.peek();
             robotNumber = WhichRobotToMove(s);
            // System.out.println("Iterations " + i++  + " h : " + s.h + " x1 : " + s.A.x + " y1 :" + s.A.y  + " x2 : " + s.B.x + " y2 : " + s.B.y + " x3 : " + s.C.x + " y3 : " + s.C.y + " # closed : " +closedList.size() + " open: " + openList.size()  );
-            if(s.operation.equals("moves right")){
+           // if we're right , don't move left because if you do that we will end up in an infinite loop
+		// you can moving up and then down up and down etc... , right then left left then right
+		if(s.operation.equals("moves right")){
                 moveDown(s,names[robotNumber]);
                 moveUp(s,names[robotNumber]);
                 moveRight(s,names[robotNumber]);  
            }
+		// same logic
            else if(s.operation.equals("moves left")){
                 moveDown(s,names[robotNumber]);
                 moveUp(s,names[robotNumber]);
